@@ -1,0 +1,169 @@
+[gd_scene load_steps=14 format=3 uid="uid://bt8tc5vl1u6u7"]
+
+[ext_resource type="Script" uid="uid://cq312g80ujgo" path="res://addons/GoBlock/go_block_editor.gd" id="1_8icjv"]
+[ext_resource type="Script" uid="uid://dxc12qe8s53pr" path="res://addons/GoBlock/button.gd" id="2_lg6uy"]
+[ext_resource type="Texture2D" uid="uid://vr582c0lpxmp" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_flag.png" id="2_ptlfs"]
+[ext_resource type="Texture2D" uid="uid://d21aa2btlnupn" path="res://addons/GoBlock/IconGodotNode/node_2D/canon_2.png" id="4_ptlfs"]
+[ext_resource type="Texture2D" uid="uid://tcpja2jtrkh2" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_circle.png" id="5_w3nux"]
+[ext_resource type="Texture2D" uid="uid://dbriaap44fkdx" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_camera_grid.png" id="6_1jpna"]
+[ext_resource type="Texture2D" uid="uid://ktae52o8bf48" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_money_bag.png" id="7_f3qrv"]
+[ext_resource type="Texture2D" uid="uid://b5x0xysa3jfts" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_face.png" id="8_d5nnd"]
+[ext_resource type="Texture2D" uid="uid://djuixov28b3ca" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_map.png" id="8_f3qrv"]
+[ext_resource type="Texture2D" uid="uid://bpsjk5f8nkkwb" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_coin.png" id="9_er8gq"]
+[ext_resource type="Texture2D" uid="uid://dbwytg4mnbgt5" path="res://addons/GoBlock/IconGodotNode/node_2D/icon_target.png" id="10_er8gq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ptlfs"]
+bg_color = Color(0, 0, 0, 0.15294118)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_kar82"]
+font_color = Color(1, 1, 1, 0.6509804)
+
+[node name="GoBLock" type="Control"]
+layout_mode = 3
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 176.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8icjv")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.043
+anchor_bottom = 1.0
+offset_top = 0.13599968
+offset_right = 167.0
+grow_vertical = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ptlfs")
+text = " Player"
+label_settings = SubResource("LabelSettings_kar82")
+vertical_alignment = 1
+autowrap_mode = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="Control" type="Control" parent="Panel/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="sprite" type="Button" parent="Panel/VBoxContainer2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "sprite"
+icon = ExtResource("8_d5nnd")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/animated_sprite_2d.tscn"
+
+[node name="coin_collector" type="Button" parent="Panel/VBoxContainer2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "coin collector"
+icon = ExtResource("7_f3qrv")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/control/coin_collector.tscn"
+
+[node name="camera2d" type="Button" parent="Panel/VBoxContainer2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "camera"
+icon = ExtResource("6_1jpna")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/camera_2d.tscn"
+
+[node name="collider" type="Button" parent="Panel/VBoxContainer2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "collider"
+icon = ExtResource("5_w3nux")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/collider_2d.tscn"
+
+[node name="jump" type="Button" parent="Panel/VBoxContainer2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "jump"
+icon = ExtResource("4_ptlfs")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/jump_comp.tscn"
+
+[node name="movement" type="Button" parent="Panel/VBoxContainer2/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "movement"
+icon = ExtResource("2_ptlfs")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/movement_comp.tscn"
+
+[node name="map" type="Label" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ptlfs")
+text = " Map"
+label_settings = SubResource("LabelSettings_kar82")
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="Control" type="Control" parent="Panel/VBoxContainer2/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer2/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="tilemap" type="Button" parent="Panel/VBoxContainer2/HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "tilemap"
+icon = ExtResource("8_f3qrv")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/tilemap.tscn"
+
+[node name="coin" type="Button" parent="Panel/VBoxContainer2/HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "coin"
+icon = ExtResource("9_er8gq")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/coin.tscn"
+
+[node name="map2" type="Label" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ptlfs")
+text = " Enemy"
+label_settings = SubResource("LabelSettings_kar82")
+vertical_alignment = 1
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="Panel/VBoxContainer2"]
+layout_mode = 2
+alignment = 2
+
+[node name="Control" type="Control" parent="Panel/VBoxContainer2/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer2/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="slime" type="Button" parent="Panel/VBoxContainer2/HBoxContainer3/VBoxContainer"]
+layout_mode = 2
+text = "slime"
+icon = ExtResource("10_er8gq")
+script = ExtResource("2_lg6uy")
+scene_path = "res://addons/GoBlock/Block/tscn/enemy.tscn"

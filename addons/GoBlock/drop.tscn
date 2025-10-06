@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://b4jsx8ybtavlp"]
+
+[ext_resource type="Script" uid="uid://dqkhssacgpgsp" path="res://addons/GoBlock/drop.gd" id="1_3raam"]
+[ext_resource type="Texture2D" uid="uid://d21aa2btlnupn" path="res://addons/GoBlock/IconGodotNode/node_2D/canon_2.png" id="2_nyt8w"]
+
+[node name="Drop" type="Node2D"]
+script = ExtResource("1_3raam")
+
+[node name="PopupMenu" type="PopupMenu" parent="."]
+oversampling_override = 1.0
+visible = true
+
+[node name="TextureRect" type="TextureRect" parent="PopupMenu"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_nyt8w")
+
+[node name="Camera2D" type="Camera2D" parent="."]
