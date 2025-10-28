@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmq4adkrhxc4b"]
+
+[ext_resource type="Script" uid="uid://cqx07gnh6vloc" path="res://addons/Godov/Nodes/comp/movement_2d.gd" id="1_21dia"]
+
+[node name="MovementComp" type="Node"]
+script = ExtResource("1_21dia")
+metadata/_custom_type_script = "uid://cqx07gnh6vloc"

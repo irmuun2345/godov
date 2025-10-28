@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bo4ae1j8wqaso"]
-
-[ext_resource type="Script" uid="uid://bhfarjtomvgel" path="res://addons/GoBlock/Block/comp/jump.gd" id="1_xf8cy"]
-
-[node name="JumpComp" type="Node"]
-script = ExtResource("1_xf8cy")
-metadata/_custom_type_script = "uid://bhfarjtomvgel"

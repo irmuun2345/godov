@@ -1,0 +1,123 @@
+[gd_scene load_steps=17 format=3 uid="uid://bspbdla6rr0jd"]
+
+[ext_resource type="Texture2D" uid="uid://dj80cmqajt2pc" path="res://addons/Godov/sample/brackeys_platformer_assets/sprites/knight.png" id="1_oldsg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jatkc"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(64, 192, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ax0ob"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(96, 192, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ffn84"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aotjo"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mn6wo"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ymsff"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dejs0"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2mtg4"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8s15w"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(64, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6bher"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(96, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fyxky"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(128, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hbbes"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(160, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hs5rp"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(192, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0lvfr"]
+atlas = ExtResource("1_oldsg")
+region = Rect2(224, 64, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_v1ovv"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jatkc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ax0ob")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ffn84")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aotjo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mn6wo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ymsff")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 7.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dejs0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2mtg4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8s15w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6bher")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fyxky")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hbbes")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hs5rp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0lvfr")
+}],
+"loop": true,
+"name": &"run",
+"speed": 7.0
+}]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_v1ovv")
+animation = &"hit"
