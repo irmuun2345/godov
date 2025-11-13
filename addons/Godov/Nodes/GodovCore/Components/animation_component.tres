@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="AnimationComponent" load_steps=2 format=3 uid="uid://o8m4ru8vm60k"]
+
+[ext_resource type="Script" uid="uid://dvulx8d40klxr" path="res://addons/Godov/Nodes/GodovCore/Components/animation_component.gd" id="1_cnfpx"]
+
+[resource]
+script = ExtResource("1_cnfpx")
+component_name = "AnimationComponent"
+metadata/_custom_type_script = "uid://dvulx8d40klxr"

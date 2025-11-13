@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MovementComponent" load_steps=2 format=3 uid="uid://bbop36k0ccdaq"]
+
+[ext_resource type="Script" uid="uid://diklma1xn6o31" path="res://addons/Godov/Nodes/GodovCore/Components/movement_component.gd" id="1_gwgi1"]
+
+[resource]
+script = ExtResource("1_gwgi1")
+speed = 250.0
+accelartaion = 20.0
+component_name = "MovementComponent"
+metadata/_custom_type_script = "uid://diklma1xn6o31"
