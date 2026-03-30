@@ -1,32 +1,25 @@
-extends Node2D
-class_name Entity ## It is base entity
-@export var entity_name = ""
-@export var components: Array[Component] = []
+extends Node2D  # or Node, CharacterBody2D, Area2D, etc.
+class_name Entity
 
-
-func _ready() -> void:
-	if get_parent().has_node("AnimatedSprite2D"):
-		
-		get_component("AnimationComponent").set_animated_sprite(get_parent().get_node("AnimatedSprite2D"))
-
-func get_component(component_class_name: String) -> Component:
-	for component in components:
-		
-		if component.component_name == component_class_name:
-			
-			return component
-			
-	return null
-
+var components: Dictionary = {}  # component_name -> Component
 
 func add_component(component: Component) -> void:
-	components.append(component)
+	if component.component_name.is_empty():
+		push_error("Component must have a component_name")
+		return
+	
+	components[component.component_name] = component
+	add_child(component)
 	component.on_add_component(self)
 
-
-func remove_component(component: Component) -> Component:
-	var index = components.find(component)
-	if index != -1:
+func remove_component(component_name: String) -> void:
+	if components.has(component_name):
+		var component = components[component_name]
 		component.on_remove_component()
-		return components.pop_at(index)
-	return null
+		components.erase(component_name)
+
+func get_component(component_name: String) -> Component:
+	return components.get(component_name)
+
+func has_component(component_name: String) -> bool:
+	return components.has(component_name)

@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://dkiyeip3qaos2"]
+[gd_scene format=3 uid="uid://dkiyeip3qaos2"]
 
 [ext_resource type="Script" uid="uid://cyvuv2wcay4t3" path="res://addons/Godov/Nodes/GodovCore/Enitties/entity_graph.gd" id="1_74f71"]
 
-[node name="GraphNode" type="GraphNode"]
-offset_right = 556.0
-offset_bottom = 261.0
+[node name="EntityGraph" type="GraphNode" unique_id=125432349]
+anchors_preset = -1
+anchor_right = 0.4826389
+anchor_bottom = 0.4027778
 title = "Entity"
 slot/0/left_enabled = false
 slot/0/left_type = 0
@@ -15,25 +16,38 @@ slot/0/right_type = 0
 slot/0/right_color = Color(1, 1, 1, 1)
 slot/0/right_icon = null
 slot/0/draw_stylebox = true
+slot/1/left_enabled = false
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = false
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
 script = ExtResource("1_74f71")
+metadata/_edit_use_anchors_ = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=446772783]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=933519053]
 layout_mode = 2
 theme_override_constants/separation = 17
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer" unique_id=2031107158]
 layout_mode = 2
 text = "EntityName:"
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer" unique_id=1523893746]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="AddComponentButton" type="Button" parent="VBoxContainer"]
+[node name="AddComponentButton" type="Button" parent="VBoxContainer" unique_id=120776917]
 layout_mode = 2
 text = "add component
 "
+
+[node name="GraphNode" type="GraphNode" parent="." unique_id=2127556598]
+layout_mode = 2

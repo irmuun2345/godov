@@ -6,7 +6,6 @@ extends GraphNode
 
 func _ready() -> void:
 	add_component_button.pressed.connect(_on_add_component_pressed)
-	# Disable slot for the button container
 	set_slot(0, false, 0, Color.WHITE, false, 0, Color.WHITE)
 
 func _process(delta: float) -> void:
@@ -36,7 +35,6 @@ func add_component_slot() -> void:
 	remove_button.text = "X"
 	remove_button.pressed.connect(_on_remove_slot.bind(row_hbox))
 	
-
 	row_hbox.add_child(label)
 	row_hbox.add_child(resource_picker)
 	row_hbox.add_child(remove_button)
@@ -45,7 +43,7 @@ func add_component_slot() -> void:
 	add_child(row_hbox)
 
 	var slot_idx = row_hbox.get_index()
-
+	
 	set_slot(slot_idx, false, 0, Color.WHITE, true, 0, Color.WHITE)
 
 func _on_remove_slot(row: HBoxContainer) -> void:
@@ -62,6 +60,6 @@ func _rebuild_slots() -> void:
 		var child = get_child(i)
 
 		if child == $VBoxContainer:
-			set_slot(i, false, 0, Color.WHITE, false, 0, Color.WHITE)
+			set_slot(i, false, 0, Color.RED, false, 0, Color.WHITE)
 		elif child is HBoxContainer:
 			set_slot(i, false, 0, Color.WHITE, true, 0, Color.WHITE)

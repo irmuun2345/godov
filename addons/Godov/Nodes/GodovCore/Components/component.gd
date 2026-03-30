@@ -1,12 +1,14 @@
-extends Resource
+extends Node
+class_name Component
 
-class_name Component ## It is base component
+var owner_entity: Node = null
 
-@export var component_name:String = ""
+func _ready() -> void:
+	# Auto-initialize when added to scene at runtime
+	if get_parent() and not Engine.is_editor_hint():
+		on_add_component(get_parent())
 
-var owner_entity:Node2D
-
-func on_add_component(entity) -> void:
+func on_add_component(entity: Node) -> void:
 	owner_entity = entity
 
 func on_remove_component() -> void:
