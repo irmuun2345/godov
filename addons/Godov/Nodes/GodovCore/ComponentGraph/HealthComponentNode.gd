@@ -7,8 +7,6 @@ var invincibility_duration: float = 0.5
 var die_on_death: bool = false
 var display_node_ref: HealthDisplayComponentNode = null
 
-var animation_node_ref: AnimationComponentNode = null
-var _anim_label: Label
 
 func _ready() -> void:
 	title = "Health Component"
@@ -59,20 +57,6 @@ func _build_ui() -> void:
 	out_label.text = "Health Out"
 	add_child(out_label)
 	set_slot(5, false, 0, Color.WHITE, true, 2, Color(0.8, 0.3, 0.3))
-	
-	_anim_label = Label.new()
-	_anim_label.text = "Animation"
-	add_child(_anim_label)
-	set_slot(get_child_count() - 1, true, 1, Color(1.0, 0.6, 0.2), false, 0, Color.WHITE)
-
-func receive_animation_connection(from_node: AnimationComponentNode) -> void:
-	animation_node_ref = from_node
-	_anim_label.text = "Animation [ connected ]"
-
-
-func receive_animation_disconnection() -> void:
-	animation_node_ref = null
-	_anim_label.text = "Animation"
 
 func receive_display_connection(from_node: HealthDisplayComponentNode) -> void:
 	display_node_ref = from_node

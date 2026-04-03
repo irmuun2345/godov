@@ -11,7 +11,6 @@ static func build_to_scene(
 	mover_node:MoverComponentNode,
 	shoot_node: ShootComponentNode,
 	collectable_node: CollectableComponentNode,
-	collectable_display_node: CollectableDisplayComponentNode,
 	save_path: String
 ) -> void:
 
@@ -34,7 +33,6 @@ static func build_to_scene(
 		_remove_node_by_name(root, "JumpComponent")
 		_remove_node_by_name(root, "PhysicsComponent")
 		_remove_node_by_name(root, "CollectableComponent")
-		_remove_node_by_name(root, "CollectableDisplayComponent")
 		print("🔄 Updating existing scene: ", save_path)
 	else:
 		# Fresh build
@@ -120,16 +118,19 @@ static func build_to_scene(
 		anim_sprite.owner = root
 
 		var anim_comp = AnimationComponent.new()
-		anim_comp.name            = "AnimationComponent"
+		anim_comp.name = "AnimationComponent"
 		anim_comp.animated_sprite = anim_sprite
-		anim_comp.animation_map   = animation_node.animation_map.duplicate()
-		anim_comp.run_threshold   = animation_node.run_threshold
-		# land_duration removed — no longer in AnimationComponent
+		anim_comp.animation_map = animation_node.animation_map.duplicate()
+		anim_comp.run_threshold = animation_node.run_threshold
+		anim_comp.land_duration = animation_node.land_duration
+
+		# ← these two lines were missing
 		anim_comp.connect_movement = movement_node != null and movement_node.animation_node_ref != null
 		anim_comp.connect_jump     = jump_node != null and jump_node.animation_node_ref != null
-		anim_comp.connect_mover    = mover_node != null and mover_node.animation_node_ref != null
-		anim_comp.connect_shoot = shoot_node != null and shoot_node.animation_node_ref != null
-		anim_comp.connect_hurt  = health_node != null and health_node.animation_node_ref != null
+		anim_comp.connect_mover = mover_node != null and mover_node.animation_node_ref != null		
+		print("connect_movement set to: ", anim_comp.connect_movement)
+		print("connect_jump set to: ", anim_comp.connect_jump)
+
 		root.add_child(anim_comp)
 		anim_comp.owner = root
 	
@@ -196,41 +197,21 @@ static func build_to_scene(
 		col_comp.respawn_time      = collectable_node.respawn_time
 		root.add_child(col_comp)
 		col_comp.owner = root
-	
-	if collectable_display_node:
-		var cd_comp = CollectableDisplayComponent.new()
-		cd_comp.name         = "CollectableDisplayComponent"
-		cd_comp.corner       = collectable_display_node.corner
-		cd_comp.margin       = collectable_display_node.margin
-		cd_comp.value_name   = collectable_display_node.value_name
-		cd_comp.label_format = collectable_display_node.label_format
-		cd_comp.font_size    = collectable_display_node.font_size
-		cd_comp.font_color   = collectable_display_node.font_color
-		root.add_child(cd_comp)
-		cd_comp.owner = root
-	if mover_node:
-		var mover_comp = MoverComponent.new()
-		mover_comp.name      = "MoverComponent"
-		mover_comp.pattern   = mover_node.pattern
-		mover_comp.axis      = mover_node.axis
-		mover_comp.speed     = mover_node.speed
-		mover_comp.distance  = mover_node.distance
-		mover_comp.clockwise = mover_node.clockwise
-		root.add_child(mover_comp)
-		mover_comp.owner = root
 
-		var phys_comp = PhysicsComponent.new()  # ← inside if block
-		phys_comp.name = "PhysicsComponent"
-		root.add_child(phys_comp)
-		phys_comp.owner = root
+	# MoverComponent needs PhysicsComponent too
+	var phys_comp = PhysicsComponent.new()
+	phys_comp.name = "PhysicsComponent"
+	root.add_child(phys_comp)
+	phys_comp.owner = root
 		# Save
-	# Save
 	var packed = PackedScene.new()
 	if packed.pack(root) == OK:
 		if ResourceSaver.save(packed, save_path) == OK:
 			print("✅ Saved: ", save_path)
+			# Force Godot to acknowledge the file changed on disk
 			ResourceLoader.load(save_path, "", ResourceLoader.CACHE_MODE_REPLACE)
 			EditorInterface.get_resource_filesystem().scan()
+			# If the scene is currently open in the editor, reload it
 			var edited_scene = EditorInterface.get_edited_scene_root()
 			if edited_scene and edited_scene.scene_file_path == save_path:
 				EditorInterface.reload_scene_from_path(save_path)
@@ -238,7 +219,9 @@ static func build_to_scene(
 			push_error("❌ Save failed")
 	else:
 		push_error("❌ Pack failed")
-	# Remove old debug prints — no constraints on what components are required
+	print("=== CharacterBuilder ===")
+	print("movement animation_node_ref: ", movement_node.animation_node_ref if movement_node else "no movement node")
+	print("jump animation_node_ref: ", jump_node.animation_node_ref if jump_node else "no jump node")
 	root.free()
 
 

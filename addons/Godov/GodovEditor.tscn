@@ -41,46 +41,16 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 5.58
 right_disconnects = true
 connections = Array[Dictionary]([{
-"from_node": &"@GraphNode@19119",
-"from_port": 2,
-"keep_alive": false,
-"to_node": &"@GraphNode@19301",
-"to_port": 0
-}, {
-"from_node": &"@GraphNode@19119",
+"from_node": &"@GraphNode@19049",
 "from_port": 0,
 "keep_alive": false,
-"to_node": &"@GraphNode@19278",
+"to_node": &"@GraphNode@19203",
 "to_port": 0
 }, {
-"from_node": &"@GraphNode@19119",
-"from_port": 1,
-"keep_alive": false,
-"to_node": &"@GraphNode@19278",
-"to_port": 1
-}, {
-"from_node": &"@GraphNode@19200",
-"from_port": 1,
-"keep_alive": false,
-"to_node": &"@GraphNode@19301",
-"to_port": 1
-}, {
-"from_node": &"@GraphNode@19200",
+"from_node": &"@GraphNode@19127",
 "from_port": 0,
 "keep_alive": false,
-"to_node": &"@GraphNode@19278",
-"to_port": 4
-}, {
-"from_node": &"@GraphNode@19358",
-"from_port": 0,
-"keep_alive": false,
-"to_node": &"@GraphNode@19140",
-"to_port": 0
-}, {
-"from_node": &"@GraphNode@19119",
-"from_port": 3,
-"keep_alive": false,
-"to_node": &"@GraphNode@19327",
+"to_node": &"@GraphNode@19143",
 "to_port": 0
 }])
 script = ExtResource("2_h162n")
