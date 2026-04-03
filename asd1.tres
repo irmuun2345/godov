@@ -1,0 +1,76 @@
+[gd_resource type="Resource" script_class="GraphEditorState" format=3 uid="uid://d0ob1wwcs2a18"]
+
+[ext_resource type="Script" uid="uid://c22ntsbn53sf4" path="res://addons/Godov/Nodes/GodovCore/ComponentGraph/GrapEditorState.gd" id="1_htdgs"]
+
+[resource]
+script = ExtResource("1_htdgs")
+nodes = [{
+"animation_map": {},
+"position": Vector2(-220, -940),
+"run_threshold": 200.0,
+"sprite_frames": "",
+"type": "AnimationComponentNode"
+}, {
+"bullet_damage": 10.0,
+"bullet_lifetime": 2.0,
+"bullet_speed": 500.0,
+"connected_shoot_action": "qq",
+"fire_mode": 0,
+"fire_rate": 0.3,
+"position": Vector2(780, -920),
+"type": "ShootComponentNode"
+}, {
+"die_on_death": true,
+"invincibility_duration": 0.5,
+"max_health": 100.0,
+"position": Vector2(-120, -460),
+"type": "HealthComponentNode"
+}, {
+"axis": 0,
+"clockwise": true,
+"distance": 200.0,
+"pattern": 1,
+"position": Vector2(140, -1100),
+"speed": 100.0,
+"type": "MoverComponentNode"
+}, {
+"actions": [{
+"keycode": 32,
+"name": "qq"
+}, {
+"keycode": 0,
+"name": ""
+}],
+"position": Vector2(420, -1040),
+"type": "InputComponentNode"
+}, {
+"above_offset": Vector2(0, -60),
+"bar_bg_color": Color(0.2, 0.2, 0.2, 1),
+"bar_color": Color(0.8, 0.2, 0.2, 1),
+"display_position": 4,
+"heart_empty_color": Color(0.3, 0.3, 0.3, 1),
+"heart_full_color": Color(0.9, 0.1, 0.1, 1),
+"heart_size": 32,
+"margin": Vector2(16, 16),
+"max_hearts": 5,
+"position": Vector2(180, -500),
+"style": 0,
+"type": "HealthDisplayComponentNode"
+}]
+connections = [{
+"from_port": 0,
+"from_type": "HealthComponentNode",
+"to_port": 0,
+"to_type": "HealthDisplayComponentNode"
+}, {
+"from_port": 0,
+"from_type": "AnimationComponentNode",
+"to_port": 0,
+"to_type": "MoverComponentNode"
+}, {
+"from_port": 0,
+"from_type": "InputComponentNode",
+"to_port": 0,
+"to_type": "ShootComponentNode"
+}]
+save_path = "res://enemy.tscn"

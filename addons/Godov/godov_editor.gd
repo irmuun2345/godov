@@ -10,13 +10,21 @@ var animation_node: AnimationComponentNode
 var _is_loading := false
 var health_node: HealthComponentNode
 var health_display_node: HealthDisplayComponentNode
-var _state_name_label: Label  # ← store direct reference
+var _state_name_label: Label
 var mover_node: MoverComponentNode
 var shoot_node: ShootComponentNode
 var collectable_node: CollectableComponentNode
+var collectable_display_node: CollectableDisplayComponentNode
+
+
 @export var toolbar_container: Control
 var _current_state_path: String = ""
 const LAST_FILE_PATH = "res://addons/Godov/.last_state"
+
+# Right-click context menu
+var _context_menu: PopupMenu
+var _right_click_graph_pos: Vector2 = Vector2.ZERO
+
 
 func _ready():
 	add_valid_connection_type(0, 0)
@@ -30,7 +38,7 @@ func _ready():
 		return
 
 	build_button = Button.new()
-	build_button.text = "▶ Build Character"
+	build_button.text = "▶ Build"
 	build_button.pressed.connect(_on_build_pressed)
 	toolbar_container.add_child(build_button)
 
@@ -59,24 +67,24 @@ func _ready():
 	save_as_btn.pressed.connect(_on_save_as_pressed)
 	toolbar_container.add_child(save_as_btn)
 
-	var add_comp_btn = MenuButton.new()
-	add_comp_btn.text = "➕ Add Component"
-	var popup = add_comp_btn.get_popup()
-	popup.add_item("Input Component",          0)
-	popup.add_item("Movement Component",       1)
-	popup.add_item("Jump Component",           2)
-	popup.add_item("Animation Component",      3)
-	popup.add_item("Health Component",         4)
-	popup.add_item("Health Display Component", 5)
-	popup.add_item("Mover Component", 6)
-	popup.add_item("Shoot Component", 7)
-	popup.add_item("Collectable Component", 8)
-	popup.id_pressed.connect(_on_add_component_selected)
-	toolbar_container.add_child(add_comp_btn)
-
 	_state_name_label = Label.new()
 	_state_name_label.text = "[ unsaved ]"
 	toolbar_container.add_child(_state_name_label)
+
+	# Build the right-click context menu
+	_context_menu = PopupMenu.new()
+	_context_menu.add_item("Input Component",          0)
+	_context_menu.add_item("Movement Component",       1)
+	_context_menu.add_item("Jump Component",           2)
+	_context_menu.add_item("Animation Component",      3)
+	_context_menu.add_item("Health Component",         4)
+	_context_menu.add_item("Health Display Component", 5)
+	_context_menu.add_item("Mover Component",          6)
+	_context_menu.add_item("Shoot Component",          7)
+	_context_menu.add_item("Collectable Component",    8)
+	_context_menu.add_item("Collectable Display",      9)
+	_context_menu.id_pressed.connect(_on_add_component_selected)
+	add_child(_context_menu)
 
 	# Restore last opened file
 	if FileAccess.file_exists(LAST_FILE_PATH):
@@ -87,6 +95,23 @@ func _ready():
 	_load_editor_state()
 	_update_title_label()
 
+
+# ─── Right-click to open spawn menu ───────────────────────────────────────────
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			# Convert local mouse position to graph-space position for node placement
+			_right_click_graph_pos = (event.position + scroll_offset) / zoom
+			# Show the popup at the global mouse position
+			_context_menu.popup(Rect2i(
+				Vector2i(get_screen_transform() * event.position),
+				Vector2i.ZERO
+			))
+			accept_event()
+
+
+# ─── Connections ──────────────────────────────────────────────────────────────
 
 func _on_connection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int):
 	var src = get_node_or_null(NodePath(from_node))
@@ -100,16 +125,19 @@ func _on_connection_request(from_node: StringName, from_port: int, to_node: Stri
 				dst.receive_connection(to_port, src, from_port)
 			elif dst is ShootComponentNode:
 				dst.receive_connection(to_port, src, from_port)
-		elif src is AnimationComponentNode:  # all animation connections here
+		elif src is AnimationComponentNode:
 			if dst is MovementComponentNode:
 				dst.receive_animation_connection(src)
 			elif dst is JumpComponentNode:
 				dst.receive_animation_connection(src)
-			elif dst is MoverComponentNode:   # ← must be inside this block
+			elif dst is MoverComponentNode:
+				dst.receive_animation_connection(src)
+			elif dst is ShootComponentNode:       
+				dst.receive_animation_connection(src)
+			elif dst is HealthComponentNode:      
 				dst.receive_animation_connection(src)
 		elif src is HealthComponentNode and dst is HealthDisplayComponentNode:
 			src.receive_display_connection(dst)
-
 
 
 func _on_disconnection_request(from_node: StringName, from_port: int, to_node: StringName, to_port: int):
@@ -132,7 +160,12 @@ func _on_disconnection_request(from_node: StringName, from_port: int, to_node: S
 		dst.receive_animation_disconnection()
 	elif dst is ShootComponentNode and src is InputComponentNode:
 		dst.receive_disconnection(to_port)
+	elif dst is ShootComponentNode and src is AnimationComponentNode:
+		dst.receive_animation_disconnection()
+	elif dst is HealthComponentNode and src is AnimationComponentNode:
+		dst.receive_animation_disconnection()
 
+# ─── Build ────────────────────────────────────────────────────────────────────
 
 func _on_build_pressed():
 	var path = save_path_edit.text
@@ -143,18 +176,21 @@ func _on_build_pressed():
 	if not DirAccess.dir_exists_absolute(folder):
 		DirAccess.make_dir_recursive_absolute(folder)
 	CharacterBuilder.build_to_scene(
-		input_node       if is_instance_valid(input_node)       else null,
-		movement_node    if is_instance_valid(movement_node)    else null,
-		jump_node        if is_instance_valid(jump_node)        else null,
-		animation_node   if is_instance_valid(animation_node)   else null,
-		health_node      if is_instance_valid(health_node)      else null,
-		mover_node       if is_instance_valid(mover_node)       else null,
-		shoot_node       if is_instance_valid(shoot_node)       else null,
-		collectable_node if is_instance_valid(collectable_node) else null,
+		input_node              if is_instance_valid(input_node)              else null,
+		movement_node           if is_instance_valid(movement_node)           else null,
+		jump_node               if is_instance_valid(jump_node)               else null,
+		animation_node          if is_instance_valid(animation_node)          else null,
+		health_node             if is_instance_valid(health_node)             else null,
+		mover_node              if is_instance_valid(mover_node)              else null,
+		shoot_node              if is_instance_valid(shoot_node)              else null,
+		collectable_node        if is_instance_valid(collectable_node)        else null,
+		collectable_display_node if is_instance_valid(collectable_display_node) else null,
 		path
 	)
 	EditorInterface.get_resource_filesystem().scan()
 
+
+# ─── Save / Load ──────────────────────────────────────────────────────────────
 
 func _save_editor_state() -> void:
 	if _current_state_path == "":
@@ -199,15 +235,16 @@ func _load_editor_state() -> void:
 		add_child(node)
 		node.restore_state(data)
 		_add_remove_button(node)
-		if node is InputComponentNode:        input_node = node
-		if node is MovementComponentNode:     movement_node = node
-		if node is JumpComponentNode:         jump_node = node
-		if node is AnimationComponentNode:    animation_node = node
-		if node is HealthComponentNode:       health_node = node
+		if node is InputComponentNode:         input_node = node
+		if node is MovementComponentNode:      movement_node = node
+		if node is JumpComponentNode:          jump_node = node
+		if node is AnimationComponentNode:     animation_node = node
+		if node is HealthComponentNode:        health_node = node
 		if node is HealthDisplayComponentNode: health_display_node = node
-		if node is MoverComponentNode: mover_node = node
-		if node is ShootComponentNode: shoot_node = node
-		if node is CollectableComponentNode: collectable_node = node
+		if node is MoverComponentNode:         mover_node = node
+		if node is ShootComponentNode:         shoot_node = node
+		if node is CollectableComponentNode:   collectable_node = node
+		if node is CollectableDisplayComponentNode: collectable_display_node = node
 
 	var type_to_name: Dictionary = {}
 	for child in get_children():
@@ -230,9 +267,8 @@ func _load_editor_state() -> void:
 			dst.receive_animation_connection(src)
 		elif src is HealthComponentNode and dst is HealthDisplayComponentNode:
 			src.receive_display_connection(dst)
-		#elif src is AnimationComponentNode and dst and dst.has_method("receive_animation_connection"):
-			#dst.receive_animation_connection(src)  # already handles MoverComponentNode too
-
+		elif src is AnimationComponentNode and dst and dst.has_method("receive_animation_connection"):
+			dst.receive_animation_connection(src)  # covers all destinations
 	_is_loading = false
 
 
@@ -244,9 +280,10 @@ func _create_node_of_type(type: String) -> GraphNode:
 		"AnimationComponentNode":      return AnimationComponentNode.new()
 		"HealthComponentNode":         return HealthComponentNode.new()
 		"HealthDisplayComponentNode":  return HealthDisplayComponentNode.new()
-		"MoverComponentNode": return MoverComponentNode.new()
-		"ShootComponentNode": return ShootComponentNode.new()
-		"CollectableComponentNode": return CollectableComponentNode.new()
+		"MoverComponentNode":          return MoverComponentNode.new()
+		"ShootComponentNode":          return ShootComponentNode.new()
+		"CollectableComponentNode":    return CollectableComponentNode.new()
+		"CollectableDisplayComponentNode": return CollectableDisplayComponentNode.new()
 	return null
 
 
@@ -255,6 +292,8 @@ func _notification(what: int) -> void:
 		if _current_state_path != "":
 			_save_editor_state()
 
+
+# ─── File dialogs ─────────────────────────────────────────────────────────────
 
 func _on_new_pressed() -> void:
 	_clear_graph()
@@ -276,13 +315,11 @@ func _on_open_pressed() -> void:
 	EditorInterface.get_base_control().add_child(dialog)
 	dialog.popup_centered_ratio(0.7)
 
-
 func _on_save_pressed() -> void:
 	if _current_state_path == "":
 		_on_save_as_pressed()
 		return
 	_save_editor_state()
-
 
 func _on_save_as_pressed() -> void:
 	var dialog = EditorFileDialog.new()
@@ -299,6 +336,8 @@ func _on_save_as_pressed() -> void:
 	dialog.popup_centered_ratio(0.7)
 
 
+# ─── Graph helpers ────────────────────────────────────────────────────────────
+
 func _clear_graph() -> void:
 	for child in get_children():
 		if child is GraphNode:
@@ -312,11 +351,14 @@ func _clear_graph() -> void:
 	mover_node = null
 	shoot_node = null
 	collectable_node = null
+	collectable_display_node = null
 
 func _update_title_label() -> void:
 	if _state_name_label:
 		_state_name_label.text = _current_state_path.get_file() if _current_state_path != "" else "[ unsaved ]"
 
+
+# ─── Spawn component at right-click position ──────────────────────────────────
 
 func _on_add_component_selected(id: int) -> void:
 	var node: GraphNode = null
@@ -366,9 +408,15 @@ func _on_add_component_selected(id: int) -> void:
 				push_warning("CollectableComponent already exists"); return
 			node = CollectableComponentNode.new()
 			collectable_node = node
+		9:
+			if collectable_display_node:
+				push_warning("CollectableDisplayComponent already exists"); return
+			node = CollectableDisplayComponentNode.new()
+			collectable_display_node = node
 
 	if node:
-		node.position_offset = scroll_offset + get_size() * 0.5 - Vector2(100, 100)
+		# Place node exactly where the user right-clicked in graph space
+		node.position_offset = _right_click_graph_pos
 		add_child(node)
 		_add_remove_button(node)
 
@@ -393,13 +441,14 @@ func _remove_component_node(node: GraphNode) -> void:
 				to.receive_animation_disconnection()
 			elif from is HealthComponentNode and to is HealthDisplayComponentNode:
 				from.receive_display_disconnection()
-	if node == input_node:           input_node = null
-	elif node == movement_node:      movement_node = null
-	elif node == jump_node:          jump_node = null
-	elif node == animation_node:     animation_node = null
-	elif node == health_node:        health_node = null
+	if node == input_node:            input_node = null
+	elif node == movement_node:       movement_node = null
+	elif node == jump_node:           jump_node = null
+	elif node == animation_node:      animation_node = null
+	elif node == health_node:         health_node = null
 	elif node == health_display_node: health_display_node = null
-	elif node == mover_node: mover_node = null
-	elif node == shoot_node: shoot_node = null
-	elif node == collectable_node: collectable_node = null
+	elif node == mover_node:          mover_node = null
+	elif node == shoot_node:          shoot_node = null
+	elif node == collectable_node:    collectable_node = null
+	elif node == collectable_display_node: collectable_display_node = null
 	node.queue_free()

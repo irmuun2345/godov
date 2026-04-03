@@ -1,0 +1,120 @@
+[gd_resource type="Resource" script_class="GraphEditorState" format=3 uid="uid://dfqpiog7rjbwv"]
+
+[ext_resource type="Script" uid="uid://c22ntsbn53sf4" path="res://addons/Godov/Nodes/GodovCore/ComponentGraph/GrapEditorState.gd" id="1_yyll5"]
+
+[resource]
+script = ExtResource("1_yyll5")
+nodes = [{
+"above_offset": Vector2(0, -60),
+"bar_bg_color": Color(0.2, 0.2, 0.2, 1),
+"bar_color": Color(0.2, 0.8, 0.2, 1),
+"display_position": 1,
+"heart_empty_color": Color(0.3, 0.3, 0.3, 1),
+"heart_full_color": Color(0.9, 0.1, 0.1, 1),
+"heart_size": 32,
+"margin": Vector2(16, 16),
+"max_hearts": 5,
+"position": Vector2(2560, 1960),
+"style": 0,
+"type": "HealthDisplayComponentNode"
+}, {
+"actions": [{
+"keycode": 65,
+"name": "move_left"
+}, {
+"keycode": 68,
+"name": "move_right"
+}, {
+"keycode": 87,
+"name": "jump"
+}, {
+"keycode": 81,
+"name": "shoot"
+}],
+"position": Vector2(1060, 1980),
+"type": "InputComponentNode"
+}, {
+"animation_map": {
+"fall": "",
+"idle": "idle",
+"jump": "jump",
+"land": "",
+"run": "run",
+"walk": ""
+},
+"position": Vector2(1140, 1580),
+"run_threshold": 200.0,
+"sprite_frames": "res://addons/Godov/sample/turt.tres",
+"type": "AnimationComponentNode"
+}, {
+"connected_actions": {
+"move_left": "move_left",
+"move_right": "move_right"
+},
+"movement_type": 0,
+"position": Vector2(1660, 1420),
+"speed": 300.0,
+"type": "MovementComponentNode"
+}, {
+"connected_actions": {
+"jump": "jump"
+},
+"coyote_time": 0.1,
+"gravity": 1000.0,
+"jump_buffer_time": 0.1,
+"jump_force": -180.0,
+"max_jump_count": 1,
+"position": Vector2(2160, 1460),
+"type": "JumpComponentNode"
+}, {
+"die_on_death": false,
+"invincibility_duration": 0.45,
+"max_health": 100.0,
+"position": Vector2(2220, 2020),
+"type": "HealthComponentNode"
+}, {
+"bullet_damage": 10.0,
+"bullet_lifetime": 2.0,
+"bullet_speed": 500.0,
+"connected_shoot_action": "shoot",
+"fire_mode": 0,
+"fire_rate": 0.3,
+"position": Vector2(1560, 2160),
+"type": "ShootComponentNode"
+}]
+connections = [{
+"from_port": 2,
+"from_type": "InputComponentNode",
+"to_port": 0,
+"to_type": "JumpComponentNode"
+}, {
+"from_port": 1,
+"from_type": "AnimationComponentNode",
+"to_port": 1,
+"to_type": "JumpComponentNode"
+}, {
+"from_port": 0,
+"from_type": "HealthComponentNode",
+"to_port": 0,
+"to_type": "HealthDisplayComponentNode"
+}, {
+"from_port": 3,
+"from_type": "InputComponentNode",
+"to_port": 0,
+"to_type": "ShootComponentNode"
+}, {
+"from_port": 0,
+"from_type": "AnimationComponentNode",
+"to_port": 2,
+"to_type": "MovementComponentNode"
+}, {
+"from_port": 0,
+"from_type": "InputComponentNode",
+"to_port": 0,
+"to_type": "MovementComponentNode"
+}, {
+"from_port": 1,
+"from_type": "InputComponentNode",
+"to_port": 1,
+"to_type": "MovementComponentNode"
+}]

@@ -4,12 +4,12 @@ class_name MovementComponentNode
 
 var movement_type: int = 0
 var speed: float = 300.0
-var connected_actions: Dictionary = {}  # key -> action_name, purely from connections
+var connected_actions: Dictionary = {}
 var animation_data: Dictionary = {}
 var _animation_slot_index: int = -1
 
-
 var animation_node_ref: AnimationComponentNode = null
+
 func _ready() -> void:
 	title = "Movement Component"
 	_build_ui()
@@ -48,18 +48,24 @@ func _build_ui() -> void:
 	add_child(speed_spin)
 	set_slot(3, false, 0, Color.WHITE, false, 0, Color.WHITE)
 
-	# Rows 4–7 — action input slots
-	_make_action_slot("Move Left")   # child 4, input port 0
-	_make_action_slot("Move Right")  # child 5, input port 1
-	_make_action_slot("Move Up")     # child 6, input port 2
-	_make_action_slot("Move Down")   # child 7, input port 3
+	# Row 4 — Move Left  (port 0) — always visible
+	_make_action_slot("Move Left")
+	# Row 5 — Move Right (port 1) — always visible
+	_make_action_slot("Move Right")
 
+	# Row 6 — Animation slot — always visible
+	var anim_container = HBoxContainer.new()
 	var anim_label = Label.new()
 	anim_label.text = "Animation"
-	add_child(anim_label)
-	_animation_slot_index = get_child_count() - 1
+	anim_container.add_child(anim_label)
+	add_child(anim_container)
+	_animation_slot_index = get_child_count() - 1  # = 6
 	set_slot(_animation_slot_index, true, 1, Color(1.0, 0.6, 0.2), false, 0, Color.WHITE)
 
+	# Row 7 — Move Up   (port 2) — top-down only, AFTER animation
+	_make_action_slot("Move Up")
+	# Row 8 — Move Down (port 3) — top-down only, AFTER animation
+	_make_action_slot("Move Down")
 
 	_refresh_slots()
 
@@ -73,13 +79,15 @@ func _make_action_slot(label_text: String) -> void:
 func _refresh_slots() -> void:
 	var is_top_down = movement_type == 1
 	var action_color = Color(0.4, 0.8, 1.0)
-	get_child(6).visible = is_top_down
-	get_child(7).visible = is_top_down
-	set_slot(6, is_top_down, 0, action_color, false, 0, Color.WHITE)
+
+	# Move Up (child 7) and Move Down (child 8) — top-down only
+	get_child(7).modulate.a = 1.0 if is_top_down else 0.3
+	get_child(8).modulate.a = 1.0 if is_top_down else 0.3
 	set_slot(7, is_top_down, 0, action_color, false, 0, Color.WHITE)
-	# Always keep animation slot enabled regardless of movement type
-	if _animation_slot_index != -1:
-		set_slot(_animation_slot_index, true, 1, Color(1.0, 0.6, 0.2), false, 0, Color.WHITE)
+	set_slot(8, is_top_down, 0, action_color, false, 0, Color.WHITE)
+
+	# Animation slot (child 6) — always on, never touched by movement type
+	set_slot(_animation_slot_index, true, 1, Color(1.0, 0.6, 0.2), false, 0, Color.WHITE)
 
 func receive_connection(to_port: int, from_node: InputComponentNode, from_port: int) -> void:
 	var action_name := from_node.get_action_name_for_port(from_port)
@@ -91,25 +99,20 @@ func receive_disconnection(to_port: int) -> void:
 	var key := _port_to_key(to_port)
 	connected_actions.erase(key)
 	get_child(_port_to_slot(to_port)).text = _slot_label_for_key(key) + " [ not connected ]"
-	
-	var animation_data: Dictionary = {}
 
 func receive_animation_connection(from_node: AnimationComponentNode) -> void:
 	animation_node_ref = from_node
-	# Update label
-	for i in get_child_count():
-		var child = get_child(i)
-		if child is Label and child.text.begins_with("Animation"):
-			child.text = "Animation [ connected ]"
-			break
+	var anim_container = get_child(_animation_slot_index)
+	var lbl = anim_container.get_child(0) as Label
+	if lbl:
+		lbl.text = "Animation [ connected ]"
 
 func receive_animation_disconnection() -> void:
 	animation_node_ref = null
-	for i in get_child_count():
-		var child = get_child(i)
-		if child is Label and child.text.begins_with("Animation"):
-			child.text = "Animation"
-			break
+	var anim_container = get_child(_animation_slot_index)
+	var lbl = anim_container.get_child(0) as Label
+	if lbl:
+		lbl.text = "Animation"
 
 func _port_to_key(port: int) -> String:
 	match port:
@@ -120,7 +123,13 @@ func _port_to_key(port: int) -> String:
 	return ""
 
 func _port_to_slot(port: int) -> int:
-	return port + 4  # children 4, 5, 6, 7
+	# Move Left=4, Move Right=5, Move Up=7, Move Down=8
+	match port:
+		0: return 4
+		1: return 5
+		2: return 7
+		3: return 8
+	return -1
 
 func _slot_label_for_key(key: String) -> String:
 	match key:
@@ -141,10 +150,8 @@ func save_state() -> Dictionary:
 
 func restore_state(data: Dictionary) -> void:
 	position_offset = data["position"]
-
 	(get_child(3) as SpinBox).value = data["speed"]
 	speed = data["speed"]
-
 	var type_option := get_child(1) as OptionButton
 	type_option.select(data["movement_type"])
 	type_option.item_selected.emit(data["movement_type"])

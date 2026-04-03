@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="GraphEditorState" format=3 uid="uid://dy04vnhbxpnts"]
+
+[ext_resource type="Script" uid="uid://c22ntsbn53sf4" path="res://addons/Godov/Nodes/GodovCore/ComponentGraph/GrapEditorState.gd" id="1_1nvuw"]
+
+[resource]
+script = ExtResource("1_1nvuw")
+nodes = [{
+"die_on_death": true,
+"invincibility_duration": 0.5,
+"max_health": 100.0,
+"position": Vector2(-400, -520),
+"type": "HealthComponentNode"
+}, {
+"above_offset": Vector2(0, -60),
+"bar_bg_color": Color(0.2, 0.2, 0.2, 1),
+"bar_color": Color(0.8, 0.2, 0.2, 1),
+"display_position": 4,
+"heart_empty_color": Color(0.3, 0.3, 0.3, 1),
+"heart_full_color": Color(0.9, 0.1, 0.1, 1),
+"heart_size": 32,
+"margin": Vector2(16, 16),
+"max_hearts": 5,
+"position": Vector2(260, -600),
+"style": 0,
+"type": "HealthDisplayComponentNode"
+}, {
+"connected_actions": {
+"move_left": "zuun"
+},
+"movement_type": 0,
+"position": Vector2(300, -1160),
+"speed": 300.0,
+"type": "MovementComponentNode"
+}, {
+"actions": [{
+"keycode": 87,
+"name": "zuun"
+}, {
+"keycode": 0,
+"name": ""
+}],
+"position": Vector2(-200, -1180),
+"type": "InputComponentNode"
+}, {
+"animation_map": {
+"run": "run"
+},
+"position": Vector2(-260, -1000),
+"run_threshold": 200.0,
+"sprite_frames": "res://addons/Godov/sample/turt.tres",
+"type": "AnimationComponentNode"
+}, {
+"bullet_damage": 10.0,
+"bullet_lifetime": 2.0,
+"bullet_speed": 500.0,
+"connected_shoot_action": "",
+"fire_mode": 1,
+"fire_rate": 0.3,
+"position": Vector2(660, -1100),
+"type": "ShootComponentNode"
+}]
+connections = [{
+"from_port": 0,
+"from_type": "HealthComponentNode",
+"to_port": 0,
+"to_type": "HealthDisplayComponentNode"
+}, {
+"from_port": 2,
+"from_type": "AnimationComponentNode",
+"to_port": 1,
+"to_type": "ShootComponentNode"
+}, {
+"from_port": 0,
+"from_type": "InputComponentNode",
+"to_port": 0,
+"to_type": "MovementComponentNode"
+}, {
+"from_port": 0,
+"from_type": "AnimationComponentNode",
+"to_port": 2,
+"to_type": "MovementComponentNode"
+}]
+save_path = "res://enemy.tscn"

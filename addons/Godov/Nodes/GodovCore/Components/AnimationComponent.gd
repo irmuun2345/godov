@@ -4,28 +4,27 @@ class_name AnimationComponent
 @export var animated_sprite: AnimatedSprite2D
 
 @export var animation_map: Dictionary = {
-	"idle": "idle",
-	"walk": "walk",
-	"run":  "run",
-	"jump": "jump",
-	"fall": "fall",
-	"land": "land",
+	"idle":  "idle",
+	"run":   "run",
+	"jump":  "jump",
+	"shoot": "shoot",
+	"hurt":  "hurt",
 }
 
 @export var run_threshold: float = 200.0
-@export var land_duration: float = 0.15
 
 signal animation_changed(new_anim: String)
 
 var _current_state: String = "idle"
-var _land_timer: float = 0.0
-var _locked: bool = false  # true while a one-shot play() is running
+var _locked: bool = false
 
 @export var connect_movement: bool = false
 @export var connect_jump: bool = false
 @export var connect_mover: bool = false
-func on_add_component(entity: Node) -> void:
+@export var connect_shoot: bool = false
+@export var connect_hurt: bool = false
 
+func on_add_component(entity: Node) -> void:
 	super.on_add_component(entity)
 
 	if not animated_sprite:
@@ -40,10 +39,9 @@ func on_add_component(entity: Node) -> void:
 		var move_comp = entity.get_node_or_null("MovementComponent")
 		if move_comp:
 			move_comp.moved.connect(_on_moved)
+			 
 		else:
 			push_warning("AnimationComponent: connect_movement=true but no MovementComponent found")
-			for c in entity.get_children():
-				print("     ", c.name, " : ", c.get_class())
 
 	if connect_jump:
 		var jump_comp = entity.get_node_or_null("JumpComponent")
@@ -52,23 +50,28 @@ func on_add_component(entity: Node) -> void:
 			jump_comp.landed.connect(_on_landed)
 		else:
 			push_warning("AnimationComponent: connect_jump=true but no JumpComponent found")
+
 	if connect_mover:
 		var mover_comp = entity.get_node_or_null("MoverComponent")
 		if mover_comp:
 			mover_comp.moved.connect(_on_moved)
 		else:
 			push_warning("AnimationComponent: connect_mover=true but no MoverComponent found")
-	set_physics_process(true)
-
-#func _connect_sibling_signals(entity: Node) -> void:
-	## Connect to JumpComponent if present
-	#for child in entity.get_children():
-		#if child is JumpComponent:
-			#child.jumped.connect(_on_jumped)
-			#child.landed.connect(_on_landed)
-			#
-		#if child is MovementComponent:
-			#child.moved.connect(_on_moved)
+	
+	if connect_shoot:
+		var shoot_comp = entity.get_node_or_null("ShootComponent")
+		if shoot_comp:
+			shoot_comp.fired.connect(_on_fired)
+		else:
+			push_warning("AnimationComponent: connect_shoot=true but no ShootComponent found")
+		set_physics_process(true)
+	
+	if connect_hurt:
+		var health_comp = entity.get_node_or_null("HealthComponent")
+		if health_comp:
+			health_comp.damaged.connect(_on_hurt)
+		else:
+			push_warning("AnimationComponent: connect_hurt=true but no HealthComponent found")
 
 func _validate_map() -> void:
 	for state_key in animation_map:
@@ -82,41 +85,30 @@ func _validate_map() -> void:
 # ─── Signal handlers ──────────────────────────────────────────────────────────
 
 func _on_jumped() -> void:
-	_land_timer = 0.0
 	_set_state("jump")
 
-func _on_landed() -> void:
-	_land_timer = land_duration
-	_set_state("land")
-
 func _on_moved(velocity: Vector2) -> void:
+	
 	if _locked:
 		return
 
-	# Flip based on horizontal direction
 	if velocity.x > 0:
 		animated_sprite.flip_h = false
 	elif velocity.x < 0:
 		animated_sprite.flip_h = true
 
-	if _current_state in ["jump", "fall", "land"]:
+	if _current_state == "jump":
 		return
 
 	var spd := velocity.length()
 	if spd >= run_threshold:
 		_set_state("run")
 	elif spd > 0:
-		_set_state("walk")
+		_set_state("idle")  # no walk anymore, fall back to idle
 	else:
 		_set_state("idle")
 
 # ─── State machine ────────────────────────────────────────────────────────────
-
-func _physics_process(delta: float) -> void:
-	if _land_timer > 0:
-		_land_timer -= delta
-		if _land_timer <= 0:
-			_set_state("idle")
 
 func _set_state(new_state: String) -> void:
 	if _locked or _current_state == new_state:
@@ -135,7 +127,6 @@ func _play_state(state: String) -> void:
 
 # ─── Public API ───────────────────────────────────────────────────────────────
 
-## Play a one-shot animation (attack, hurt, etc.) — state machine resumes after
 func play(anim_name: String, on_finish: Callable = Callable()) -> void:
 	if not animated_sprite.sprite_frames.has_animation(anim_name):
 		push_warning("AnimationComponent.play(): \"%s\" not found in SpriteFrames" % anim_name)
@@ -168,3 +159,14 @@ func get_current_state() -> String:
 
 func on_remove_component() -> void:
 	super.on_remove_component()
+
+func _on_fired(_projectile: Node) -> void:
+	play(animation_map.get("shoot", ""))
+
+func _on_hurt(_amount: float) -> void:
+	play(animation_map.get("hurt", ""))
+
+func _on_landed() -> void:
+	if _current_state == "jump":
+		_current_state = "idle"
+		# _on_moved will take over from here on the next physics frame

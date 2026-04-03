@@ -8,14 +8,14 @@ var bullet_speed: float = 500.0
 var bullet_damage: float = 10.0
 var bullet_lifetime: float = 2.0
 var connected_shoot_action: String = ""
-
+var animation_node_ref: AnimationComponentNode = null
 var _fm_opt: OptionButton
 var _fr_spin: SpinBox
 var _bs_spin: SpinBox
 var _bd_spin: SpinBox
 var _bl_spin: SpinBox
 var _action_label: Label
-
+var _anim_label: Label
 func _ready() -> void:
 	title = "Shoot Component"
 	_build_ui()
@@ -105,6 +105,19 @@ func _build_ui() -> void:
 	_bl_spin.value_changed.connect(func(val): bullet_lifetime = val)
 	add_child(_bl_spin)
 	set_slot(10, false, 0, Color.WHITE, false, 0, Color.WHITE)
+	
+	_anim_label = Label.new()
+	_anim_label.text = "Animation"
+	add_child(_anim_label)
+	set_slot(get_child_count() - 1, true, 1, Color(1.0, 0.6, 0.2), false, 0, Color.WHITE)
+
+func receive_animation_connection(from_node: AnimationComponentNode) -> void:
+	animation_node_ref = from_node
+	_anim_label.text = "Animation [ connected ]"
+
+func receive_animation_disconnection() -> void:
+	animation_node_ref = null
+	_anim_label.text = "Animation"
 
 func receive_connection(to_port: int, from_node: InputComponentNode, from_port: int) -> void:
 	connected_shoot_action = from_node.get_action_name_for_port(from_port)
